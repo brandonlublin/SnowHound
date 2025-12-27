@@ -32,6 +32,12 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_USE_BACKEND: 'true'
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://api.snowhound.me' }}
+          VITE_APP_URL: 'https://snowhound.me'
+          VITE_ENABLE_RSS_FEEDS: 'true'
+          VITE_ENABLE_MOCK_DATA: 'false'
         run: npm run build
 
       - name: Setup Pages
