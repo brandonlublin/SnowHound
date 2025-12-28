@@ -49,6 +49,21 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Root route
+app.get('/', (req: express.Request, res: express.Response) => {
+  res.json({
+    service: 'SnowHound API',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      weather: '/api/weather/forecast',
+      geocode: '/api/weather/geocode',
+      rss: '/api/rss/feed'
+    }
+  });
+});
+
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
