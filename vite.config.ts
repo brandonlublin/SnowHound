@@ -12,24 +12,41 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // React vendor chunk
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
-            return 'react-vendor';
-          }
-          // Chart vendor chunk (recharts and dependencies)
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/react-is')) {
+          // Chart vendor chunk - include recharts AND React so React is available
+          if (id.includes('node_modules/recharts') || 
+              id.includes('node_modules/react') ||
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-is')) {
             return 'chart-vendor';
           }
+          
+          // React router (not needed by recharts)
+          if (id.includes('node_modules/react-router')) {
+            return 'react-vendor';
+          }
+          
           // Utils chunk
           if (id.includes('node_modules/date-fns') || id.includes('node_modules/axios')) {
             return 'utils';
           }
-        }
+        },
+        // Ensure ES module format for proper module resolution
+        format: 'es'
       }
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false, // Disable sourcemaps in production for smaller bundle
-    minify: 'esbuild' // Faster and smaller than terser
+    sourcemap: false,
+    minify: 'esbuild',
+    // Ensure proper handling of CommonJS modules
+    commonjsOptions: {
+      transformMixedEsModules: true
+    }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'recharts'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   }
 })
 
