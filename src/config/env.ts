@@ -19,7 +19,7 @@ export const config = {
   enableMockData: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true',
   
   // API Configuration
-  apiTimeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10),
+  apiTimeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10), // 30 seconds for Render cold starts
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001',
   useBackend: import.meta.env.VITE_USE_BACKEND === 'true',
   

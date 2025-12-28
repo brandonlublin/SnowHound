@@ -60,49 +60,87 @@ const transformForecastData = (
 };
 
 export class BackendWeatherService {
+  // Retry logic for cold starts and timeouts
+  private static async retryRequest<T>(
+    requestFn: () => Promise<T>,
+    maxRetries: number = 2,
+    delay: number = 2000
+  ): Promise<T> {
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await requestFn();
+      } catch (error: any) {
+        lastError = error;
+        
+        // Only retry on timeout or network errors
+        const shouldRetry = 
+          (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED') &&
+          attempt < maxRetries;
+        
+        if (shouldRetry) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1)));
+          continue;
+        }
+        
+        // Don't retry for other errors
+        throw error;
+      }
+    }
+    
+    throw lastError;
+  }
+
   static async getForecast(
     location: Location,
     model: string,
     provider: string
   ): Promise<ForecastData> {
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/weather/forecast`,
-        {
-          location: {
-            lat: location.lat,
-            lon: location.lon
+    return this.retryRequest(async () => {
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/api/weather/forecast`,
+          {
+            location: {
+              lat: location.lat,
+              lon: location.lon
+            },
+            model,
+            provider
           },
-          model,
-          provider
-        },
-        {
-          timeout: config.apiTimeout,
-          headers: {
-            'Content-Type': 'application/json'
+          {
+            timeout: config.apiTimeout,
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
+        );
+        
+        // Remove cached flag from response before transforming
+        const { cached, ...forecastData } = response.data;
+        
+        return transformForecastData(forecastData, location, model, provider);
+      } catch (error: any) {
+        console.error('Backend API error:', error);
+        
+        // Provide more detailed error message
+        if (error.code === 'ECONNREFUSED') {
+          throw new Error('Backend server is not running. Please start the server with: npm run dev:server');
         }
-      );
-      
-      // Remove cached flag from response before transforming
-      const { cached, ...forecastData } = response.data;
-      
-      return transformForecastData(forecastData, location, model, provider);
-    } catch (error: any) {
-      console.error('Backend API error:', error);
-      
-      // Provide more detailed error message
-      if (error.code === 'ECONNREFUSED') {
-        throw new Error('Backend server is not running. Please start the server with: npm run dev:server');
+        if (error.code === 'ERR_NETWORK') {
+          throw new Error('Cannot connect to backend. Check VITE_API_BASE_URL in .env');
+        }
+        if (error.code === 'ECONNABORTED') {
+          throw new Error('Request timed out. The backend may be starting up (cold start). Please try again in a moment.');
+        }
+        if (error.response) {
+          throw new Error(error.response.data?.error || `Backend error: ${error.response.status}`);
+        }
+        throw new Error(error.message || 'Failed to fetch forecast from backend');
       }
-      if (error.code === 'ERR_NETWORK') {
-        throw new Error('Cannot connect to backend. Check VITE_API_BASE_URL in .env');
-      }
-      if (error.response) {
-        throw new Error(error.response.data?.error || `Backend error: ${error.response.status}`);
-      }
-      throw new Error(error.message || 'Failed to fetch forecast from backend');
-    }
+    });
   }
   
   static async getMultipleForecasts(
@@ -131,21 +169,23 @@ export class BackendWeatherService {
   
   static async geocodeLocation(query: string): Promise<Location[]> {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/weather/geocode`,
-        {
-          params: { q: query },
-          timeout: config.apiTimeout
-        }
-      );
-      
-      return response.data.map((item: any, index: number) => ({
-        id: `geocoded-${item.place_id || index}`,
-        name: item.display_name.split(',').slice(0, 2).join(', '),
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        type: 'search' as const
-      }));
+      return await this.retryRequest(async () => {
+        const response = await axios.get(
+          `${API_BASE_URL}/api/weather/geocode`,
+          {
+            params: { q: query },
+            timeout: config.apiTimeout
+          }
+        );
+        
+        return response.data.map((item: any, index: number) => ({
+          id: `geocoded-${item.place_id || index}`,
+          name: item.display_name.split(',').slice(0, 2).join(', '),
+          lat: parseFloat(item.lat),
+          lon: parseFloat(item.lon),
+          type: 'search' as const
+        }));
+      }, 1, 1000); // 1 retry for geocoding
     } catch (error: any) {
       console.error('Backend geocoding error:', error);
       return [];
