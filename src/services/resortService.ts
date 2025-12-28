@@ -55,8 +55,8 @@ const RESORT_INFO: Record<string, ResortInfo> = {
   },
   'crystal-mountain-wa': {
     name: 'Crystal Mountain, WA',
-    webcams: ['https://www.crystalmountainresort.com/mountain-conditions'],
-    trailConditionsUrl: 'https://www.crystalmountainresort.com/mountain-conditions',
+    webcams: ['https://www.crystalmountainresort.com/the-mountain/mountain-report-and-webcams'],
+    trailConditionsUrl: 'https://www.crystalmountainresort.com/the-mountain/mountain-report-and-webcams',
     website: 'https://www.crystalmountainresort.com'
   }
 };

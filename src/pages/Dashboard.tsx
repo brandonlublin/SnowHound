@@ -143,32 +143,35 @@ export default function Dashboard() {
               {favoriteCount > 0 && (
                 <button
                   onClick={() => navigate('/favorites')}
-                  className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors touch-target relative"
-                  aria-label="View favorite locations"
+                  className="btn-icon relative"
+                  aria-label={`View ${favoriteCount} favorite location${favoriteCount !== 1 ? 's' : ''}`}
+                  aria-describedby="favorite-count"
                 >
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span className="hidden sm:inline text-sm text-gray-300 whitespace-nowrap">
+                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                  <span className="hidden sm:inline text-sm whitespace-nowrap">
                     Favorites
                   </span>
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                  <span id="favorite-count" className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-semibold" aria-label={`${favoriteCount} favorites`}>
                     {favoriteCount}
                   </span>
                 </button>
               )}
               <button
                 onClick={() => setShowModelSelector(!showModelSelector)}
-                className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors touch-target relative"
-                aria-label="Toggle weather model filter"
+                className="btn-icon relative"
+                aria-label={`Toggle weather model filter. ${selectedModels.length} model${selectedModels.length !== 1 ? 's' : ''} selected`}
+                aria-expanded={showModelSelector}
+                aria-haspopup="true"
               >
-                <Filter className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
-                <span className="hidden md:inline text-sm text-gray-300 whitespace-nowrap">
+                <Filter className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" aria-hidden="true" />
+                <span className="hidden md:inline text-sm whitespace-nowrap">
                   Models
                 </span>
-                <span className="md:hidden text-xs text-gray-300 whitespace-nowrap">
+                <span className="md:hidden text-xs whitespace-nowrap">
                   Weather Models
                 </span>
                 {selectedModels.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-semibold" aria-label={`${selectedModels.length} models selected`}>
                     {selectedModels.length}
                   </span>
                 )}
@@ -183,7 +186,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-3 md:px-4 py-4 md:py-8 safe-bottom">
+      <main id="main-content" className="container mx-auto px-3 md:px-4 py-4 md:py-8 safe-bottom" role="main">
         {/* Rate Limit Warning */}
         {rateLimitError && (
           <RateLimitWarning
@@ -215,6 +218,7 @@ export default function Dashboard() {
               location={location} 
               selectedModels={selectedModels}
               forecasts={forecasts}
+              onLocationUpdate={setLocation}
             />
           </div>
         )}

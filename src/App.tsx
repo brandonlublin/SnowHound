@@ -6,6 +6,10 @@ import FavoritesDashboard from './pages/FavoritesDashboard';
 function App() {
   return (
     <BrowserRouter>
+      {/* Skip to main content link for screen readers */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/hourly/:date" element={<HourlyForecastPage />} />

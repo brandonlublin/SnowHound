@@ -28,6 +28,18 @@
     min-width: 44px;
     touch-action: manipulation;
   }
+
+  /* Accessibility: Focus styles for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid theme('colors.blue.400');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Skip link for screen readers */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:font-semibold;
+  }
 }
 
 @layer components {
@@ -43,6 +55,33 @@
   .touch-target {
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
     touch-action: manipulation;
+  }
+
+  /* Accessible button styles */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200;
+    @apply focus-visible:outline-2 focus-visible:outline-blue-400 focus-visible:outline-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none;
+    @apply min-h-[44px] touch-target;
+  }
+
+  .btn-primary {
+    @apply btn bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white;
+    @apply shadow-lg shadow-blue-500/25;
+  }
+
+  .btn-secondary {
+    @apply btn glass hover:bg-white/20 active:bg-white/30 text-gray-200;
+    @apply border border-white/20;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-white/10 active:bg-white/20 text-gray-300;
+  }
+
+  .btn-icon {
+    @apply btn p-2.5 rounded-lg glass hover:bg-white/20 active:bg-white/30;
+    @apply text-gray-300 hover:text-white;
   }
   
   /* Safe area insets for iOS */
@@ -60,6 +99,30 @@
   
   .safe-right {
     padding-right: env(safe-area-inset-right);
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
 

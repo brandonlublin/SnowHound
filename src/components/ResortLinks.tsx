@@ -14,24 +14,24 @@ export default function ResortLinks({ location }: ResortLinksProps) {
   }
 
   return (
-    <div className="card mt-4">
+    <div className="card mt-4" role="region" aria-label="Resort information and links">
       <h4 className="font-semibold mb-3 flex items-center gap-2">
-        <Map className="w-5 h-5 text-blue-400" />
+        <Map className="w-5 h-5 text-blue-400" aria-hidden="true" />
         Resort Information
       </h4>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="list">
         {resortInfo.webcams && resortInfo.webcams.length > 0 && (
           <a
             href={resortInfo.webcams[0]}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors group touch-target"
+            className="btn-secondary justify-start"
+            role="listitem"
+            aria-label="View resort webcams (opens in new tab)"
           >
-            <Camera className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
-            <span className="text-sm text-gray-300 group-hover:text-blue-400 transition-colors">
-              Webcams
-            </span>
-            <ExternalLink className="w-3 h-3 text-gray-400 ml-auto" />
+            <Camera className="w-4 h-4" aria-hidden="true" />
+            <span>Webcams</span>
+            <ExternalLink className="w-3 h-3 ml-auto" aria-hidden="true" />
           </a>
         )}
         {resortInfo.trailConditionsUrl && (
@@ -39,13 +39,13 @@ export default function ResortLinks({ location }: ResortLinksProps) {
             href={resortInfo.trailConditionsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors group touch-target"
+            className="btn-secondary justify-start"
+            role="listitem"
+            aria-label="View trail conditions (opens in new tab)"
           >
-            <Map className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
-            <span className="text-sm text-gray-300 group-hover:text-blue-400 transition-colors">
-              Trail Conditions
-            </span>
-            <ExternalLink className="w-3 h-3 text-gray-400 ml-auto" />
+            <Map className="w-4 h-4" aria-hidden="true" />
+            <span>Trail Conditions</span>
+            <ExternalLink className="w-3 h-3 ml-auto" aria-hidden="true" />
           </a>
         )}
         {resortInfo.liftStatusUrl && (
@@ -53,13 +53,13 @@ export default function ResortLinks({ location }: ResortLinksProps) {
             href={resortInfo.liftStatusUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors group touch-target"
+            className="btn-secondary justify-start"
+            role="listitem"
+            aria-label="View lift status (opens in new tab)"
           >
-            <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
-            <span className="text-sm text-gray-300 group-hover:text-blue-400 transition-colors">
-              Lift Status
-            </span>
-            <ExternalLink className="w-3 h-3 text-gray-400 ml-auto" />
+            <ExternalLink className="w-4 h-4" aria-hidden="true" />
+            <span>Lift Status</span>
+            <ExternalLink className="w-3 h-3 ml-auto" aria-hidden="true" />
           </a>
         )}
         {resortInfo.website && (
@@ -67,13 +67,13 @@ export default function ResortLinks({ location }: ResortLinksProps) {
             href={resortInfo.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors group touch-target"
+            className="btn-secondary justify-start"
+            role="listitem"
+            aria-label="Visit official resort website (opens in new tab)"
           >
-            <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
-            <span className="text-sm text-gray-300 group-hover:text-blue-400 transition-colors">
-              Official Website
-            </span>
-            <ExternalLink className="w-3 h-3 text-gray-400 ml-auto" />
+            <ExternalLink className="w-4 h-4" aria-hidden="true" />
+            <span>Official Website</span>
+            <ExternalLink className="w-3 h-3 ml-auto" aria-hidden="true" />
           </a>
         )}
       </div>

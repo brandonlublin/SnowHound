@@ -1,5 +1,5 @@
 import { Download, Share2, FileJson, FileSpreadsheet } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Location } from '../types/weather';
 import { ForecastData } from '../types/weather';
 import { exportAsJSON, exportAsCSV, generateForecastCard } from '../utils/exportUtils';
@@ -14,6 +14,8 @@ interface ExportButtonProps {
 export default function ExportButton({ location, forecasts, selectedModels }: ExportButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleExportJSON = () => {
     try {
@@ -52,51 +54,115 @@ export default function ExportButton({ location, forecasts, selectedModels }: Ex
     }
   };
 
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape as any);
+      // Focus first item in dropdown
+      setTimeout(() => {
+        const firstButton = dropdownRef.current?.querySelector('button');
+        firstButton?.focus();
+      }, 0);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape as any);
+    };
+  }, [isOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isOpen && dropdownRef.current && !dropdownRef.current.contains(e.target as Node) && 
+          buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 md:px-4 py-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors touch-target"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
+        className="btn-secondary"
         aria-label="Export or share forecast"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
-        <Download className="w-4 h-4" />
-        <span className="hidden sm:inline text-sm">Export</span>
+        <Download className="w-4 h-4" aria-hidden="true" />
+        <span className="hidden sm:inline">Export</span>
       </button>
 
       {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-[100]"
-            onClick={() => setIsOpen(false)}
-            aria-hidden="true"
-          />
-          <div className="absolute right-0 mt-2 w-48 glass rounded-lg shadow-xl z-[101] border border-white/20">
-            <div className="p-2 space-y-1">
-              <button
-                onClick={handleShare}
-                disabled={exporting}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors text-left touch-target"
-              >
-                <Share2 className="w-4 h-4" />
-                <span className="text-sm">Share Link</span>
-              </button>
-              <button
-                onClick={handleExportJSON}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors text-left touch-target"
-              >
-                <FileJson className="w-4 h-4" />
-                <span className="text-sm">Export JSON</span>
-              </button>
-              <button
-                onClick={handleExportCSV}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors text-left touch-target"
-              >
-                <FileSpreadsheet className="w-4 h-4" />
-                <span className="text-sm">Export CSV</span>
-              </button>
-            </div>
+        <div
+          ref={dropdownRef}
+          role="menu"
+          aria-label="Export options"
+          className="absolute right-0 mt-2 w-48 glass rounded-lg shadow-xl z-[101] border border-white/20"
+        >
+          <div className="p-2 space-y-1">
+            <button
+              onClick={handleShare}
+              onKeyDown={(e) => handleKeyDown(e, handleShare)}
+              disabled={exporting}
+              role="menuitem"
+              className="w-full btn-ghost justify-start"
+              aria-label="Share forecast link"
+            >
+              <Share2 className="w-4 h-4" aria-hidden="true" />
+              <span>Share Link</span>
+            </button>
+            <button
+              onClick={handleExportJSON}
+              onKeyDown={(e) => handleKeyDown(e, handleExportJSON)}
+              role="menuitem"
+              className="w-full btn-ghost justify-start"
+              aria-label="Export forecast as JSON file"
+            >
+              <FileJson className="w-4 h-4" aria-hidden="true" />
+              <span>Export JSON</span>
+            </button>
+            <button
+              onClick={handleExportCSV}
+              onKeyDown={(e) => handleKeyDown(e, handleExportCSV)}
+              role="menuitem"
+              className="w-full btn-ghost justify-start"
+              aria-label="Export forecast as CSV file"
+            >
+              <FileSpreadsheet className="w-4 h-4" aria-hidden="true" />
+              <span>Export CSV</span>
+            </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { X, Check } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { WEATHER_MODELS } from '../services/weatherModels';
 import { getApiKeyStatus } from '../config/env';
 
@@ -18,6 +19,30 @@ export default function FilterSidebar({
   maxSelection = 5
 }: FilterSidebarProps) {
   const apiStatus = getApiKeyStatus();
+  const sidebarRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle Escape key and focus management
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    
+    // Focus the close button when sidebar opens
+    setTimeout(() => {
+      closeButtonRef.current?.focus();
+    }, 100);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
 
   // Determine if a model will use mock data
   const willUseMock = (modelId: string): boolean => {
@@ -57,6 +82,7 @@ export default function FilterSidebar({
 
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
         className={`
           fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-slate-900/95 backdrop-blur-lg border-l border-white/20 z-50
           transform transition-transform duration-300 ease-in-out
@@ -65,20 +91,24 @@ export default function FilterSidebar({
           overflow-y-auto
         `}
         aria-label="Model filter sidebar"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filter-sidebar-title"
       >
         <div className="p-4 md:p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold">Weather Models</h2>
+              <h2 id="filter-sidebar-title" className="text-lg font-semibold">Weather Models</h2>
               <p className="text-xs text-gray-400 mt-0.5">Select models to compare</p>
             </div>
             <button
+              ref={closeButtonRef}
               onClick={onClose}
-              className="p-2 glass hover:bg-white/20 active:bg-white/30 rounded-lg transition-colors touch-target flex-shrink-0"
+              className="btn-icon"
               aria-label="Close filter sidebar"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
@@ -102,6 +132,12 @@ export default function FilterSidebar({
                 <button
                   key={model.id}
                   onClick={() => handleToggle(model.id)}
+                  onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+                      e.preventDefault();
+                      handleToggle(model.id);
+                    }
+                  }}
                   onTouchStart={(e) => {
                     if (!isDisabled) {
                       e.preventDefault();
@@ -109,6 +145,8 @@ export default function FilterSidebar({
                     }
                   }}
                   disabled={isDisabled}
+                  aria-pressed={isSelected}
+                  aria-label={`${isSelected ? 'Deselect' : 'Select'} ${model.name} model`}
                   className={`
                     w-full relative p-3 rounded-lg border transition-all text-left touch-target active:scale-[0.98]
                     ${isSelected
