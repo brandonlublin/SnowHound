@@ -31,7 +31,6 @@ import express from 'express';
 import cors from 'cors';
 import { connectDB } from './utils/database';
 import weatherRoutes from './routes/weather';
-import rssRoutes from './routes/rss';
 
 // Debug: Log environment variable status (without exposing keys)
 console.log('🔧 Environment check:');
@@ -58,8 +57,7 @@ app.get('/', (req: express.Request, res: express.Response) => {
     endpoints: {
       health: '/health',
       weather: '/api/weather/forecast',
-      geocode: '/api/weather/geocode',
-      rss: '/api/rss/feed'
+      geocode: '/api/weather/geocode'
     }
   });
 });
@@ -71,7 +69,6 @@ app.get('/health', (req: express.Request, res: express.Response) => {
 
 // Routes
 app.use('/api/weather', weatherRoutes);
-app.use('/api/rss', rssRoutes);
 
 // Start server (MongoDB connection is optional for basic functionality)
 const startServer = async () => {

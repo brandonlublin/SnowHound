@@ -38,8 +38,8 @@ export default function ModelSelector({ selectedModels, onToggleModel, maxSelect
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold mb-4">Select Weather Models ({selectedModels.length}/{maxSelection})</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <h3 className="text-sm font-semibold mb-3 text-gray-300">Select Weather Models ({selectedModels.length}/{maxSelection})</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
         {WEATHER_MODELS.map((model) => {
           const isSelected = selectedModels.includes(model.id);
           const isDisabled = !isSelected && selectedModels.length >= maxSelection;
@@ -56,7 +56,7 @@ export default function ModelSelector({ selectedModels, onToggleModel, maxSelect
               }}
               disabled={isDisabled}
               className={`
-                relative p-3 md:p-4 rounded-lg border-2 transition-all text-left touch-target active:scale-95
+                relative p-2 rounded-lg border transition-all text-left touch-target active:scale-95
                 ${isSelected
                   ? 'border-blue-400 bg-blue-400/20 active:bg-blue-400/30'
                   : isDisabled
@@ -66,21 +66,20 @@ export default function ModelSelector({ selectedModels, onToggleModel, maxSelect
               `}
             >
               {isSelected && (
-                <div className="absolute top-2 right-2">
-                  <Check className="w-5 h-5 text-blue-400" />
+                <div className="absolute top-1 right-1">
+                  <Check className="w-3 h-3 text-blue-400" />
                 </div>
               )}
-              <div className="pr-6">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-lg">{model.name}</h4>
+              <div className="pr-5">
+                <div className="flex items-center gap-1 mb-0.5">
+                  <h4 className="font-semibold text-sm">{model.name}</h4>
                   {willUseMock(model.id) && (
-                    <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded">
+                    <span className="text-[10px] px-1 py-0.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded">
                       Mock
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-400 mb-2">{model.provider}</p>
-                <p className="text-xs text-gray-500">{model.description}</p>
+                <p className="text-xs text-gray-400">{model.provider}</p>
               </div>
             </button>
           );

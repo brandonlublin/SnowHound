@@ -1,4 +1,5 @@
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { config } from '../config/env';
 
 interface DataStatusIndicatorProps {
   isMock: boolean;
@@ -50,7 +51,11 @@ export default function DataStatusIndicator({ isMock, provider, compact = false,
           <AlertCircle className="w-4 h-4 text-yellow-400" />
           <div>
             <p className="text-sm font-medium text-yellow-400">Using Mock Data</p>
-            <p className="text-xs text-gray-400">API keys not configured - Add keys in .env for real data</p>
+            <p className="text-xs text-gray-400">
+              {config.useBackend 
+                ? 'Backend API unavailable - Using mock data' 
+                : 'API keys not configured - Add keys in .env for real data'}
+            </p>
           </div>
         </>
       ) : (

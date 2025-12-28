@@ -175,5 +175,42 @@ export class LocationService {
   static isFavorite(locationId: string): boolean {
     return this.getFavorites().some(f => f.id === locationId);
   }
+
+  static getDefaultLocation(): Location | null {
+    if (!config.defaultLocation) {
+      return null;
+    }
+
+    try {
+      // Format: "name,lat,lon,elevation" or "name,lat,lon"
+      const parts = config.defaultLocation.split(',');
+      if (parts.length < 3) {
+        console.warn('Invalid default location format. Expected: "name,lat,lon" or "name,lat,lon,elevation"');
+        return null;
+      }
+
+      const name = parts[0].trim();
+      const lat = parseFloat(parts[1].trim());
+      const lon = parseFloat(parts[2].trim());
+      const elevation = parts.length > 3 ? parseFloat(parts[3].trim()) : undefined;
+
+      if (!validateCoordinates(lat, lon)) {
+        console.warn('Invalid coordinates in default location');
+        return null;
+      }
+
+      return {
+        id: `default-${name.toLowerCase().replace(/\s+/g, '-')}`,
+        name,
+        lat,
+        lon,
+        type: 'search',
+        elevation
+      };
+    } catch (error) {
+      console.error('Error parsing default location:', error);
+      return null;
+    }
+  }
 }
 

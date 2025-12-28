@@ -33,11 +33,11 @@ jobs:
 
       - name: Build
         env:
-          VITE_USE_BACKEND: 'true'
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://api.snowhound.me' }}
+          # Backend Configuration - Update VITE_API_BASE_URL after deploying backend to Render
+          VITE_USE_BACKEND: ${{ secrets.VITE_USE_BACKEND || 'false' }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://your-backend-url.onrender.com' }}
           VITE_APP_URL: 'https://snowhound.me'
-          VITE_ENABLE_RSS_FEEDS: 'true'
-          VITE_ENABLE_MOCK_DATA: 'false'
+          VITE_ENABLE_MOCK_DATA: ${{ secrets.VITE_USE_BACKEND == 'true' && 'false' || 'true' }}
         run: npm run build
 
       - name: Setup Pages

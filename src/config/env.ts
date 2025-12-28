@@ -6,16 +6,14 @@ export const config = {
   openWeatherApiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || '',
   weatherApiKey: import.meta.env.VITE_WEATHERAPI_KEY || '',
   
-  // RSS Feed Configuration
-  rssProxyApiKey: import.meta.env.VITE_RSS_PROXY_API_KEY || 'demo',
-  rssProxyUrl: import.meta.env.VITE_RSS_PROXY_URL || 'https://api.rss2json.com/v1/api.json',
-  
   // App Configuration
   appName: import.meta.env.VITE_APP_NAME || 'SnowHound',
   appUrl: import.meta.env.VITE_APP_URL || '',
   
+  // Default Location (format: "name,lat,lon,elevation" or "name,lat,lon")
+  defaultLocation: import.meta.env.VITE_DEFAULT_LOCATION || '',
+  
   // Feature Flags
-  enableRSSFeeds: import.meta.env.VITE_ENABLE_RSS_FEEDS !== 'false',
   enableMockData: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true',
   
   // API Configuration

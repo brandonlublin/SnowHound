@@ -4,6 +4,7 @@ import GraphView from './GraphView';
 import TableView from './TableView';
 import ChartView from './ChartView';
 import DataStatusIndicator from './DataStatusIndicator';
+import { calculateAllConfidences, getOverallConfidence } from '../utils/modelConfidence';
 
 interface ComparisonViewProps {
   forecasts: ForecastData[];
@@ -21,9 +22,13 @@ export default function ComparisonView({ forecasts, viewType, onViewTypeChange, 
     );
   }
 
+  // Calculate model confidence
+  const confidences = calculateAllConfidences(forecasts);
+  const overallConfidence = getOverallConfidence(confidences);
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => onViewTypeChange('graph')}
@@ -38,8 +43,8 @@ export default function ComparisonView({ forecasts, viewType, onViewTypeChange, 
             }`}
             aria-label="Graph view"
           >
-            <LineChart className="w-4 h-4" />
-            <span className="hidden sm:inline">Graph</span>
+            <LineChart className="w-4 h-4 flex-shrink-0" />
+            <span className="hidden sm:inline text-sm">Graph</span>
           </button>
           <button
             onClick={() => onViewTypeChange('table')}
@@ -54,8 +59,8 @@ export default function ComparisonView({ forecasts, viewType, onViewTypeChange, 
             }`}
             aria-label="Table view"
           >
-            <Table className="w-4 h-4" />
-            <span className="hidden sm:inline">Table</span>
+            <Table className="w-4 h-4 flex-shrink-0" />
+            <span className="hidden sm:inline text-sm">Table</span>
           </button>
           <button
             onClick={() => onViewTypeChange('chart')}
@@ -70,14 +75,31 @@ export default function ComparisonView({ forecasts, viewType, onViewTypeChange, 
             }`}
             aria-label="Chart view"
           >
-            <BarChart3 className="w-4 h-4" />
-            <span className="hidden sm:inline">Chart</span>
+            <BarChart3 className="w-4 h-4 flex-shrink-0" />
+            <span className="hidden sm:inline text-sm">Chart</span>
           </button>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <div className="text-xs sm:text-sm text-gray-400">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+          <div className="text-sm text-gray-400 whitespace-nowrap">
             Comparing {forecasts.length} model{forecasts.length !== 1 ? 's' : ''}
           </div>
+          {forecasts.length > 1 && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Confidence:</span>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs border ${
+                  overallConfidence.agreement === 'high'
+                    ? 'text-green-400 bg-green-500/20 border-green-500/30'
+                    : overallConfidence.agreement === 'medium'
+                    ? 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30'
+                    : 'text-red-400 bg-red-500/20 border-red-500/30'
+                }`}
+                title={overallConfidence.label}
+              >
+                {overallConfidence.score}% - {overallConfidence.label}
+              </span>
+            </div>
+          )}
           <div className="flex gap-2 flex-wrap">
             {forecasts.map((forecast) => (
               <DataStatusIndicator
