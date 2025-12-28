@@ -69,9 +69,16 @@ export default function FavoritesDashboard() {
   };
 
   const handleSelectLocation = (location: Location) => {
-    // Save to localStorage and navigate to main dashboard
-    localStorage.setItem('snowhound-location', JSON.stringify(location));
-    navigate('/');
+    // Navigate with location in URL parameters
+    const params = new URLSearchParams({
+      lat: location.lat.toString(),
+      lon: location.lon.toString(),
+      name: location.name
+    });
+    if (location.elevation) {
+      params.set('elevation', location.elevation.toString());
+    }
+    navigate(`/?${params.toString()}`);
   };
 
   if (loading) {

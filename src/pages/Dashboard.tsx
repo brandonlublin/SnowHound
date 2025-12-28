@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { Snowflake, Filter, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Location, ForecastData } from '../types/weather';
 import { LocationService } from '../services/locationService';
 import { WeatherService } from '../services/weatherApi';
@@ -22,6 +22,7 @@ type ViewType = 'graph' | 'table' | 'chart';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [location, setLocation] = useState<Location | null>(null);
   const [selectedModels, setSelectedModels] = useState<string[]>(['gfs', 'ecmwf']);
   const [forecasts, setForecasts] = useState<ForecastData[]>([]);
@@ -43,9 +44,53 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Try to get current location on mount
+  // Try to get current location on mount and when URL params change
   useEffect(() => {
     const initializeLocation = async () => {
+      // First, check if there's a location saved in localStorage (from favorites dashboard)
+      const savedLocation = localStorage.getItem('snowhound-location');
+      if (savedLocation) {
+        try {
+          const location = JSON.parse(savedLocation);
+          setLocation(location);
+          // Clear it so it doesn't persist on next load
+          localStorage.removeItem('snowhound-location');
+          return;
+        } catch (error) {
+          console.error('Failed to parse saved location:', error);
+          localStorage.removeItem('snowhound-location');
+        }
+      }
+
+      // Check URL parameters for location (from share links or favorites)
+      const lat = searchParams.get('lat');
+      const lon = searchParams.get('lon');
+      const name = searchParams.get('name');
+      const elevation = searchParams.get('elevation');
+      const modelsParam = searchParams.get('models');
+
+      if (lat && lon && name) {
+        setLocation({
+          id: `url-${lat}-${lon}`,
+          name: name,
+          lat: parseFloat(lat),
+          lon: parseFloat(lon),
+          type: 'search',
+          elevation: elevation ? parseInt(elevation, 10) : undefined
+        });
+        if (modelsParam) {
+          setSelectedModels(modelsParam.split(','));
+        }
+        return;
+      }
+
+      // Only try geolocation/default if we don't already have a location set
+      // and there are no URL params (prevents resetting on navigation)
+      if (location && !lat && !lon) {
+        return;
+      }
+
+      // Try to get current location via geolocation
       try {
         const currentLoc = await LocationService.getCurrentLocation();
         setLocation(currentLoc);
@@ -56,20 +101,20 @@ export default function Dashboard() {
         if (defaultLoc) {
           setLocation(defaultLoc);
         } else {
-          // Fallback to Vail, CO
+          // Fallback to Crystal Mountain, WA (home mountain)
           setLocation({
-            id: 'vail',
-            name: 'Vail, CO',
-            lat: 39.6403,
-            lon: -106.3742,
+            id: 'crystal-mountain-wa',
+            name: 'Crystal Mountain, WA',
+            lat: 46.9361,
+            lon: -121.4744,
             type: 'search',
-            elevation: 8150
+            elevation: 7012
           });
         }
       }
     };
     initializeLocation();
-  }, []);
+  }, [searchParams]); // Re-run when URL params change
 
   // Load forecasts when location or models change
   useEffect(() => {
