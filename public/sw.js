@@ -35,6 +35,18 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+  
+  // Skip unsupported URL schemes (chrome-extension:, moz-extension:, etc.)
+  // These cannot be cached and will cause errors
+  if (!url.protocol.startsWith('http')) {
+    return; // Let the browser handle it normally
+  }
+
+  // Only cache same-origin requests
+  if (url.origin !== self.location.origin) {
+    return; // Don't cache cross-origin requests
+  }
+
   const isJSChunk = url.pathname.includes('/assets/') && url.pathname.endsWith('.js');
   const isCSS = url.pathname.includes('/assets/') && url.pathname.endsWith('.css');
 
@@ -74,10 +86,15 @@ self.addEventListener('fetch', (event) => {
           // Clone the response
           const responseToCache = response.clone();
 
-          // Cache the response
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          // Cache the response (only if it's a valid cacheable request)
+          try {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          } catch (error) {
+            // Silently fail if caching is not possible (e.g., unsupported scheme)
+            console.warn('Failed to cache request:', event.request.url);
+          }
 
           return response;
         });
