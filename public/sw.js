@@ -1,5 +1,5 @@
-// Simple service worker for caching
-const CACHE_NAME = 'snowhound-v1';
+// Service worker for caching - DO NOT cache JS chunks (they have hashes)
+const CACHE_NAME = 'snowhound-v2';
 const STATIC_CACHE = [
   '/',
   '/index.html',
@@ -29,11 +29,33 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first for JS chunks, cache for static assets
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+  const isJSChunk = url.pathname.includes('/assets/') && url.pathname.endsWith('.js');
+  const isCSS = url.pathname.includes('/assets/') && url.pathname.endsWith('.css');
+
+  // For JS chunks and CSS (which have hashes), always fetch from network first
+  // This ensures we get the latest version after deployment
+  if (isJSChunk || isCSS) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Don't cache JS chunks - they're versioned by hash
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try cache as fallback
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // For other assets, use cache-first strategy
   event.respondWith(
     caches.match(event.request)
       .then((cached) => {
