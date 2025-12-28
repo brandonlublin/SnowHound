@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, X, Loader2 } from 'lucide-react';
+import { Star, MapPin, X } from 'lucide-react';
 import { Location, ForecastData } from '../types/weather';
 import { LocationService } from '../services/locationService';
 import { WeatherService } from '../services/weatherApi';
+import { CardSkeleton } from '../components/skeletons';
 
 interface FavoriteLocationWithForecast {
   location: Location;
@@ -75,8 +76,14 @@ export default function FavoritesDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-4">
+        <div className="container mx-auto py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -154,7 +161,7 @@ export default function FavoritesDashboard() {
 
               {fav.loading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                  <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : fav.forecast ? (
                 <div className="space-y-3">

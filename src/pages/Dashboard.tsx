@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Snowflake, Loader2, Filter, Star } from 'lucide-react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { Snowflake, Filter, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Location, ForecastData } from '../types/weather';
 import { LocationService } from '../services/locationService';
@@ -9,11 +9,14 @@ import { WEATHER_MODELS } from '../services/weatherModels';
 import LocationSearch from '../components/LocationSearch';
 import LocationDisplay from '../components/LocationDisplay';
 import FilterSidebar from '../components/FilterSidebar';
-import ComparisonView from '../components/ComparisonView';
-import SummaryCard from '../components/SummaryCard';
-import FiveDayForecast from '../components/FiveDayForecast';
 import DataStatusIndicator from '../components/DataStatusIndicator';
 import RateLimitWarning from '../components/RateLimitWarning';
+import { ForecastSkeleton, SummaryCardSkeleton, ComparisonViewSkeleton } from '../components/skeletons';
+
+// Lazy load heavy components
+const SummaryCard = lazy(() => import('../components/SummaryCard'));
+const FiveDayForecast = lazy(() => import('../components/FiveDayForecast'));
+const ComparisonView = lazy(() => import('../components/ComparisonView'));
 
 type ViewType = 'graph' | 'table' | 'chart';
 
@@ -224,38 +227,48 @@ export default function Dashboard() {
         )}
 
         {/* Summary Cards */}
-        {forecasts.length > 0 && (
+        {loading && forecasts.length === 0 ? (
           <div className="mb-6">
-            <SummaryCard forecasts={forecasts} />
+            <SummaryCardSkeleton />
           </div>
-        )}
+        ) : forecasts.length > 0 ? (
+          <div className="mb-6">
+            <Suspense fallback={<SummaryCardSkeleton />}>
+              <SummaryCard forecasts={forecasts} />
+            </Suspense>
+          </div>
+        ) : null}
 
         {/* 7-Day Forecast */}
-        {forecasts.length > 0 && (
+        {loading && forecasts.length === 0 ? (
           <div className="mb-6">
-            <FiveDayForecast forecasts={forecasts} location={location || undefined} />
+            <ForecastSkeleton />
           </div>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="card text-center py-12 mb-6">
-            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-400" />
-            <p className="text-gray-400">Loading forecasts from {selectedModels.length} model{selectedModels.length !== 1 ? 's' : ''}...</p>
+        ) : forecasts.length > 0 ? (
+          <div className="mb-6">
+            <Suspense fallback={<ForecastSkeleton />}>
+              <FiveDayForecast forecasts={forecasts} location={location || undefined} />
+            </Suspense>
           </div>
-        )}
+        ) : null}
 
         {/* Comparison View */}
-        {!loading && forecasts.length > 0 && (
+        {loading && forecasts.length === 0 ? (
           <div className="mb-6">
-            <ComparisonView
-              forecasts={forecasts}
-              viewType={viewType}
-              onViewTypeChange={setViewType}
-              onHideModel={handleHideModel}
-            />
+            <ComparisonViewSkeleton />
           </div>
-        )}
+        ) : !loading && forecasts.length > 0 ? (
+          <div className="mb-6">
+            <Suspense fallback={<ComparisonViewSkeleton />}>
+              <ComparisonView
+                forecasts={forecasts}
+                viewType={viewType}
+                onViewTypeChange={setViewType}
+                onHideModel={handleHideModel}
+              />
+            </Suspense>
+          </div>
+        ) : null}
 
       </main>
 

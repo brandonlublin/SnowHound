@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <style>
+      .snow { fill: none; stroke: #60a5fa; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .center { fill: #3b82f6; }
+    </style>
+  </defs>
+  <!-- Clean, simple snowflake optimized for favicon -->
+  <g class="snow">
+    <!-- Center dot -->
+    <circle cx="50" cy="50" r="3" class="center" />
+    
+    <!-- Main 6 arms -->
+    <line x1="50" y1="50" x2="50" y2="15" />
+    <line x1="50" y1="50" x2="50" y2="85" />
+    <line x1="50" y1="50" x2="15" y2="50" />
+    <line x1="50" y1="50" x2="85" y2="50" />
+    <line x1="50" y1="50" x2="21.5" y2="21.5" />
+    <line x1="50" y1="50" x2="78.5" y2="78.5" />
+    <line x1="50" y1="50" x2="78.5" y2="21.5" />
+    <line x1="50" y1="50" x2="21.5" y2="78.5" />
+    
+    <!-- Side branches on vertical/horizontal arms -->
+    <line x1="50" y1="15" x2="45" y2="10" />
+    <line x1="50" y1="15" x2="55" y2="10" />
+    <line x1="50" y1="85" x2="45" y2="90" />
+    <line x1="50" y1="85" x2="55" y2="90" />
+    <line x1="15" y1="50" x2="10" y2="45" />
+    <line x1="15" y1="50" x2="10" y2="55" />
+    <line x1="85" y1="50" x2="90" y2="45" />
+    <line x1="85" y1="50" x2="90" y2="55" />
+    
+    <!-- Side branches on diagonal arms -->
+    <line x1="21.5" y1="21.5" x2="17" y2="17" />
+    <line x1="21.5" y1="21.5" x2="17" y2="26" />
+    <line x1="78.5" y1="78.5" x2="83" y2="74" />
+    <line x1="78.5" y1="78.5" x2="83" y2="83" />
+    <line x1="78.5" y1="21.5" x2="83" y2="17" />
+    <line x1="78.5" y1="21.5" x2="83" y2="26" />
+    <line x1="21.5" y1="78.5" x2="17" y2="74" />
+    <line x1="21.5" y1="78.5" x2="17" y2="83" />
+  </g>
+</svg>

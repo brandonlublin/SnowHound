@@ -1,0 +1,18 @@
+{
+  "name": "SnowHound - Where is the snow?",
+  "short_name": "SnowHound",
+  "description": "Comprehensive snowfall monitoring with multi-model weather forecasts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/snowflake-simple.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

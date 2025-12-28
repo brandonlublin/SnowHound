@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Snowflake icon optimized for favicon -->
+  <defs>
+    <style>
+      .snowflake { fill: #60a5fa; stroke: #3b82f6; stroke-width: 2; }
+      .snowflake-dark { fill: #3b82f6; }
+    </style>
+  </defs>
+  
+  <!-- Main snowflake shape -->
+  <g class="snowflake">
+    <!-- Center hexagon -->
+    <polygon points="50,20 60,30 60,40 50,50 40,40 40,30" />
+    <polygon points="50,50 60,60 60,70 50,80 40,70 40,60" />
+    
+    <!-- Six main arms -->
+    <line x1="50" y1="10" x2="50" y2="20" stroke-width="3" />
+    <line x1="50" y1="80" x2="50" y2="90" stroke-width="3" />
+    <line x1="20" y1="50" x2="30" y2="50" stroke-width="3" />
+    <line x1="70" y1="50" x2="80" y2="50" stroke-width="3" />
+    <line x1="25" y1="25" x2="30" y2="30" stroke-width="3" />
+    <line x1="70" y1="70" x2="75" y2="75" stroke-width="3" />
+    <line x1="25" y1="75" x2="30" y2="70" stroke-width="3" />
+    <line x1="70" y1="25" x2="75" y2="30" stroke-width="3" />
+    
+    <!-- Side branches on each arm -->
+    <line x1="50" y1="10" x2="45" y2="15" stroke-width="2" />
+    <line x1="50" y1="10" x2="55" y2="15" stroke-width="2" />
+    <line x1="50" y1="90" x2="45" y2="85" stroke-width="2" />
+    <line x1="50" y1="90" x2="55" y2="85" stroke-width="2" />
+    
+    <line x1="20" y1="50" x2="15" y2="45" stroke-width="2" />
+    <line x1="20" y1="50" x2="15" y2="55" stroke-width="2" />
+    <line x1="80" y1="50" x2="85" y2="45" stroke-width="2" />
+    <line x1="80" y1="50" x2="85" y2="55" stroke-width="2" />
+    
+    <line x1="25" y1="25" x2="20" y2="20" stroke-width="2" />
+    <line x1="25" y1="25" x2="20" y2="30" stroke-width="2" />
+    <line x1="75" y1="75" x2="80" y2="70" stroke-width="2" />
+    <line x1="75" y1="75" x2="80" y2="80" stroke-width="2" />
+    <line x1="25" y1="75" x2="20" y2="70" stroke-width="2" />
+    <line x1="25" y1="75" x2="20" y2="80" stroke-width="2" />
+    <line x1="75" y1="25" x2="80" y2="20" stroke-width="2" />
+    <line x1="75" y1="25" x2="80" y2="30" stroke-width="2" />
+  </g>
+</svg>
+

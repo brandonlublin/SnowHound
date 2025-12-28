@@ -1,5 +1,5 @@
 import { MapPin, Navigation, Star, Search, ExternalLink, Share2, Check, Mountain } from 'lucide-react';
-import { useState, KeyboardEvent, useEffect } from 'react';
+import { useState, KeyboardEvent, useEffect, memo } from 'react';
 import { Location } from '../types/weather';
 import { generateShareUrl, shareContent } from '../utils/shareUtils';
 import ExportButton from './ExportButton';
@@ -14,7 +14,7 @@ interface LocationDisplayProps {
   onLocationUpdate?: (location: Location) => void;
 }
 
-export default function LocationDisplay({ location, selectedModels, forecasts = [], onLocationUpdate }: LocationDisplayProps) {
+function LocationDisplay({ location, selectedModels, forecasts = [], onLocationUpdate }: LocationDisplayProps) {
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'sharing'>('idle');
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -203,4 +203,6 @@ export default function LocationDisplay({ location, selectedModels, forecasts = 
     </div>
   );
 }
+
+export default memo(LocationDisplay);
 
